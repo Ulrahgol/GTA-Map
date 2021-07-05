@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!--
+https://go.microsoft.com/fwlink/?LinkID=208121. 
+-->
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <_PublishTargetUrl>C:\Projects\GTA-Map\back-end\GTA-Map\GTA-Map\bin\Release\net5.0\publish\</_PublishTargetUrl>
+    <History>True|2021-07-04T15:50:37.9071581Z;True|2021-07-04T04:01:02.5051826+02:00;True|2021-07-04T03:57:21.8521044+02:00;True|2021-07-04T03:28:45.1464421+02:00;</History>
+  </PropertyGroup>
+</Project>
