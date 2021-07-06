@@ -1,12 +1,11 @@
 import { Component } from '@angular/core';
 import { NgElement, WithProperties } from '@angular/elements';
-import { icon, latLng, Map, marker, tileLayer, Layer, Marker, LatLng } from 'leaflet';
+import { icon, latLng, Map, marker, tileLayer, Layer, Marker, LatLng, LatLngBounds } from 'leaflet';
 import { Subscription } from 'rxjs';
 import { CustomMarker } from './models/customMarker';
 import { PopupComponent } from './popup/popup.component';
 import { MarkerService } from './services/MarkerService';
 import { AccountService } from './services/accountService';
-import {Md5} from 'ts-md5/dist/md5';
 import { Account } from './models/account';
 
 @Component({
@@ -24,7 +23,7 @@ export class AppComponent {
   gtaMap = tileLayer(
     '../assets/map/{z}/{x}/{y}.png',
     { 
-      maxZoom: 5, 
+      maxZoom: 7, 
       minZoom: 3,
       attribution: "..." 
     }
@@ -41,7 +40,10 @@ marker = marker([ 0, 0 ], {
   options = {
     layers: [ this.gtaMap, this.marker ],
     zoom: 3,
-    center: latLng([ 60, -100 ])
+    center: latLng([ 65, -100 ]),
+    maxBounds: new LatLngBounds([
+      [-50, 50],
+      [216, -280]] )
   };
 
   subscriptions: Subscription[];
@@ -96,6 +98,8 @@ marker = marker([ 0, 0 ], {
         // Add listener to make new markers
         this.map.addEventListener("click", (e: any) => {     
           let customMarker: CustomMarker = new CustomMarker();
+          console.log(e.latlng.lat, e.latlng.lng);
+          
           customMarker.latitude = e.latlng.lat;
           customMarker.longitude = e.latlng.lng;
           this.markerService.makeMarker(customMarker).subscribe((r)=> { customMarker = r; });
