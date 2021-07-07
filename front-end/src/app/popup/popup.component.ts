@@ -7,22 +7,21 @@ declare var $: any;
 
 @Component({
     selector: 'popup',
-    template: `
-    <form class="example-form">
-        <mat-form-field appearance="fill">
-        <mat-label>Name</mat-label>
-        <input matInput id="name" value="{{name}}">
-        </mat-form-field>
+    templateUrl: 'popup.component.html',
+  //   template: `
+  //   <form class="example-form">
+  //       <mat-form-field appearance="fill">
+  //       <mat-label>Name</mat-label>
+  //       <input matInput id="name" value="{{name}}">
+  //       </mat-form-field>
     
-        <mat-form-field appearance="fill">
-        <mat-label>Notes</mat-label>
-        <textarea matInput id="notes">{{notes}}</textarea>
-        </mat-form-field>
-        <mat-form-field appearance="fill">
-            <button mat-flat-button color="primary" (click)="updateMarker()">Save</button>
-        </mat-form-field>
-    </form>
-  `,
+  //       <mat-form-field appearance="fill">
+  //       <mat-label>Notes</mat-label>
+  //       <textarea matInput id="notes">{{notes}}</textarea>
+  //       </mat-form-field>
+  //       <button mat-flat-button color="primary" (click)="updateMarker()">Save</button>
+  //   </form>
+  // `,
     styleUrls: ['./popup.component.scss']
   })
   export class PopupComponent implements OnInit {
