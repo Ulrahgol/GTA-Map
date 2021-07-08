@@ -1,8 +1,7 @@
 
-<login *ngIf="!loggedIn" (submitEM)="login($event)" [error]="error"></login>
+<!-- <login *ngIf="!loggedIn" (submitEM)="login($event)" [error]="error"></login> -->
 
 <div
-*ngIf="loggedIn"
 style="height: 100vh;"
 leaflet
 [leafletOptions]="options"

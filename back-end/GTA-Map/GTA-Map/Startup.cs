@@ -48,8 +48,7 @@ namespace GTA_Map
 
             services.AddDbContext<AMCDbContext>(
                 options => options.UseMySql(
-                    "Server=192.168.192.6; Database=gta_map;User=gta_map;Password=vdMi8Cv3EwWbonqh;",
-                    //"Server=localhost; Database=gta_map;User=root;Password=xNFP4zgA;",
+                    "Server=localhost; Database=gta_map;User=root;Password=xNFP4zgA;",
                     new MySqlServerVersion(new Version(10, 6, 2))
                 )
             );

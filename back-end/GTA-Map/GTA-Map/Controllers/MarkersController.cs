@@ -65,10 +65,10 @@ namespace GTA_Map.Controllers
         }
 
         // DELETE: api/Markers/5
-        [HttpDelete("{latitude}/{longitude}")]
-        public async Task<IActionResult> DeleteMarker(double latitude, double longitude)
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteMarker(int id)
         {
-            List<Marker> markers = _context.Markers.Where(x => x.Latitude == latitude && x.Longitude == longitude).ToList();
+            List<Marker> markers = _context.Markers.Where(x => x.Id == id).ToList();
             if (markers == null || markers.Count == 0)
             {
                 return NotFound();

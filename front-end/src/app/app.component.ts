@@ -46,10 +46,8 @@ marker = marker([ 0, 0 ], {
       [216, -280]] )
   };
 
-  subscriptions: Subscription[];
-
   constructor(private markerService: MarkerService, private accountService: AccountService) {
-      this.subscriptions = [];
+
   }
 
   onMapReady(map: Map) {
@@ -70,16 +68,12 @@ marker = marker([ 0, 0 ], {
                   iconUrl: 'leaflet/marker-icon.png',
                   shadowUrl: 'leaflet/marker-shadow.png'
                 })
-              });
+              })
         
-              this.map.addLayer(newMarker.on('click', (event: any) => {
-                if (event.originalEvent.ctrlKey) {
-                  this.removeLayer(newMarker);
-                }
-              }).bindPopup( fl => {
+              this.map.addLayer(newMarker.bindPopup( fl => {
                 const popupEl: NgElement & WithProperties<PopupComponent> = document.createElement('popup-element') as any;
                 // Listen to the close event
-                popupEl.marker = newMarker;
+                popupEl.mapMarker = newMarker;
                 popupEl.markerId = customMarker.id;
                 popupEl.name = customMarker.name;
                 popupEl.notes = customMarker.notes;
@@ -96,48 +90,45 @@ marker = marker([ 0, 0 ], {
 
   addMapMarkerHandler(){
         // Add listener to make new markers
-        this.map.addEventListener("click", (e: any) => {     
-          let customMarker: CustomMarker = new CustomMarker();
-          console.log(e.latlng.lat, e.latlng.lng);
-          
-          customMarker.latitude = e.latlng.lat;
-          customMarker.longitude = e.latlng.lng;
-          this.markerService.makeMarker(customMarker).subscribe((r)=> { customMarker = r; });
-          const newMarker = marker([e.latlng.lat, e.latlng.lng], {
-            icon: icon({       
-              iconSize: [ 25, 41 ],
-              iconAnchor: [ 13, 41 ],
-              popupAnchor: [2, -40],
-              iconUrl: 'leaflet/marker-icon.png',
-              shadowUrl: 'leaflet/marker-shadow.png'
-            })
-          });
-    
-          this.map.addLayer(newMarker.on('click', (event: any) => {
+        this.map.addEventListener("click", (event: any) => {  
+          if (event.originalEvent.ctrlKey) {
+            let customMarker: CustomMarker = new CustomMarker();
+            let newMarker: Layer;
             if (event.originalEvent.ctrlKey) {
-              this.removeLayer(newMarker);
-            }
-          }).bindPopup( fl => {
-            const popupEl: NgElement & WithProperties<PopupComponent> = document.createElement('popup-element') as any;
-            // Listen to the close event
-            popupEl.marker = newMarker;
-            popupEl.markerId = customMarker.id;
-            popupEl.name = customMarker.name;
-            popupEl.notes = customMarker.notes;
-            popupEl.latitude = customMarker.latitude;
-            popupEl.longitude = customMarker.longitude;
-            // Add to the DOM
-            return popupEl;
-          }))
-    
+            customMarker.latitude = event.latlng.lat;
+            customMarker.longitude = event.latlng.lng;
+            this.markerService.makeMarker(customMarker).subscribe((r)=> { customMarker = r; });
+            newMarker = marker([event.latlng.lat, event.latlng.lng], {
+              icon: icon({       
+                iconSize: [ 25, 41 ],
+                iconAnchor: [ 13, 41 ],
+                popupAnchor: [2, -40],
+                iconUrl: 'leaflet/marker-icon.png',
+                shadowUrl: 'leaflet/marker-shadow.png'
+              })
+            });
+            this.map.addLayer(newMarker.bindPopup( fl => {
+              const popupEl: NgElement & WithProperties<PopupComponent> = document.createElement('popup-element') as any;
+              // Listen to the close event
+              popupEl.mapMarker = newMarker;
+              popupEl.markerId = customMarker.id;
+              popupEl.name = customMarker.name;
+              popupEl.notes = customMarker.notes;
+              popupEl.latitude = customMarker.latitude;
+              popupEl.longitude = customMarker.longitude;
+              // Add to the DOM
+              return popupEl;
+            }))
+          }
+        }   
         })
   }
 
-  removeLayer(marker: Marker){
-    const latlng: LatLng = marker.getLatLng();
-    this.map.removeLayer(marker)
-    this.markerService.deleteMarker(latlng.lat, latlng.lng).subscribe(()=> { });
-  }
+  // removeLayer(marker: Marker){
+  //   const latlng: LatLng = marker.getLatLng();
+  //   this.map.removeLayer(marker)
+  //   this.markerService.deleteMarker(latlng.lat, latlng.lng).subscribe(()=> { });
+  // }
 
   login(obj: any){
     this.accountService.login(new Account(obj.username, obj.password)).subscribe((account) => {

@@ -23,7 +23,7 @@ export class MarkerService {
         return this.http.post<CustomMarker>(`${environment.api}/Markers/${customMarker.id}`, customMarker, httpOptions);
     }
 
-    public deleteMarker(latitude: number, longitude: number): Observable<CustomMarker> {
-        return this.http.delete<CustomMarker>(`${environment.api}/Markers/${latitude}/${longitude}`, httpOptions);
+    public deleteMarker(id: number): Observable<CustomMarker> {
+        return this.http.delete<CustomMarker>(`${environment.api}/Markers/${id}`, httpOptions);
     }
 }

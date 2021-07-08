@@ -1,6 +1,6 @@
 import { Component, OnInit, Input } from "@angular/core";
 import { NgElement, WithProperties } from "@angular/elements";
-import { icon, marker, Marker } from "leaflet";
+import { icon, Layer, marker, Marker, Map } from "leaflet";
 import { CustomMarker } from "../models/customMarker";
 import { MarkerService } from "../services/MarkerService";
 declare var $: any;
@@ -8,35 +8,19 @@ declare var $: any;
 @Component({
     selector: 'popup',
     templateUrl: 'popup.component.html',
-  //   template: `
-  //   <form class="example-form">
-  //       <mat-form-field appearance="fill">
-  //       <mat-label>Name</mat-label>
-  //       <input matInput id="name" value="{{name}}">
-  //       </mat-form-field>
-    
-  //       <mat-form-field appearance="fill">
-  //       <mat-label>Notes</mat-label>
-  //       <textarea matInput id="notes">{{notes}}</textarea>
-  //       </mat-form-field>
-  //       <button mat-flat-button color="primary" (click)="updateMarker()">Save</button>
-  //   </form>
-  // `,
     styleUrls: ['./popup.component.scss']
   })
   export class PopupComponent implements OnInit {
   
-    @Input() marker: Marker = marker([ 0, 0 ], {
-        icon: icon({
-          iconSize: [ 0, 0 ],
-          iconAnchor: [ 0, 0 ],
-          iconUrl: 'leaflet/marker-icon.png'
-        })});
     @Input() markerId: number = 0;
     @Input() name: string = "";
     @Input() notes: string = "";
     @Input() latitude: number = 0;
     @Input() longitude: number = 0;
+    @Input() mapMarker: Layer;
+    @Input() map: Map;
+
+    deleting: Boolean = false;
 
     constructor(private markerService: MarkerService) {
     }
@@ -55,10 +39,10 @@ declare var $: any;
         customMarker.latitude = this.latitude;
         customMarker.longitude = this.longitude;
         this.markerService.updateMarker(customMarker).subscribe(marker => {
-            this.marker.bindPopup( fl => {
+            this.mapMarker.bindPopup( fl => {
                 const popupEl: NgElement & WithProperties<PopupComponent> = document.createElement('popup-element') as any;
                 // Listen to the close event
-                popupEl.marker = this.marker;
+                popupEl.mapMarker = this.mapMarker;
                 popupEl.markerId = customMarker.id;
                 popupEl.name = customMarker.name;
                 popupEl.notes = customMarker.notes;
@@ -68,6 +52,16 @@ declare var $: any;
                 return popupEl;
               })
         });
+      }
+
+      deletePrompt(){
+        this.deleting = !this.deleting;
+      }
+
+      deleteMarker(){
+        this.markerService.deleteMarker(this.markerId).subscribe(() => {
+          this.map.removeLayer(this.mapMarker);
+        });   
       }
   
   }

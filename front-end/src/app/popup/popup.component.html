@@ -1,15 +1,33 @@
 
 
- <form class="example-form">
-     <mat-form-field appearance="fill">
-     <mat-label>Name</mat-label>
-     <input matInput id="name" value="{{name}}">
-     </mat-form-field>
- 
-     <mat-form-field appearance="fill">
-     <mat-label>Notes</mat-label>
-     <textarea matInput id="notes">{{notes}}</textarea>
-     </mat-form-field>
-     <button mat-flat-button color="primary" (click)="updateMarker()">Save</button>
+ <form class="example-form" *ngIf="!deleting">
+    <div fxLayout="row" >
+        <mat-form-field appearance="fill">
+        <mat-label>Name</mat-label>
+        <input matInput id="name" value="{{name}}">
+        </mat-form-field>
+    </div> 
+
+     <div fxLayout="row" >
+        <mat-form-field appearance="fill">
+        <mat-label>Notes</mat-label>
+        <textarea matInput id="notes">{{notes}}</textarea>
+        </mat-form-field>
+     </div> 
+     
+
+     <div fxLayout="row" fxLayoutAlign="space-between end">
+        <button mat-flat-button color="primary" (click)="updateMarker()">Save</button>
+        <button mat-flat-button color="warn" (click)="deletePrompt()">Delete</button>
+     </div>
  </form>
+
+ <div *ngIf="deleting" fxLayout="column" fxLayoutAlign="space-between stretch">
+     <div style="padding-bottom: 20px;">Are you sure you want to delete this marker?</div>
+     <div fxLayout="row" fxLayoutAlign="space-between end">
+        <button mat-flat-button color="warn" (click)="deleteMarker()">Yes</button>
+        <button mat-flat-button color="primary" (click)="deletePrompt()">No</button>
+     </div>
+ </div>
+
 
