@@ -1,7 +1,6 @@
 import { Component } from '@angular/core';
 import { NgElement, WithProperties } from '@angular/elements';
-import { icon, latLng, Map, marker, tileLayer, Layer, Marker, LatLng, LatLngBounds } from 'leaflet';
-import { Subscription } from 'rxjs';
+import { icon, latLng, Map, marker, tileLayer, Layer, LatLngBounds } from 'leaflet';
 import { CustomMarker } from './models/customMarker';
 import { PopupComponent } from './popup/popup.component';
 import { MarkerService } from './services/MarkerService';
@@ -73,6 +72,7 @@ marker = marker([ 0, 0 ], {
               this.map.addLayer(newMarker.bindPopup( fl => {
                 const popupEl: NgElement & WithProperties<PopupComponent> = document.createElement('popup-element') as any;
                 // Listen to the close event
+                popupEl.map = this.map;
                 popupEl.mapMarker = newMarker;
                 popupEl.markerId = customMarker.id;
                 popupEl.name = customMarker.name;

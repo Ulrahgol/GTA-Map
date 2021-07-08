@@ -1,6 +1,6 @@
 import { Component, OnInit, Input } from "@angular/core";
 import { NgElement, WithProperties } from "@angular/elements";
-import { icon, Layer, marker, Marker, Map } from "leaflet";
+import { Layer, Map } from "leaflet";
 import { CustomMarker } from "../models/customMarker";
 import { MarkerService } from "../services/MarkerService";
 declare var $: any;
@@ -38,10 +38,11 @@ declare var $: any;
         customMarker.notes = notes;
         customMarker.latitude = this.latitude;
         customMarker.longitude = this.longitude;
-        this.markerService.updateMarker(customMarker).subscribe(marker => {
+        this.markerService.updateMarker(customMarker).subscribe(() => {
             this.mapMarker.bindPopup( fl => {
                 const popupEl: NgElement & WithProperties<PopupComponent> = document.createElement('popup-element') as any;
                 // Listen to the close event
+                popupEl.map = this.map;
                 popupEl.mapMarker = this.mapMarker;
                 popupEl.markerId = customMarker.id;
                 popupEl.name = customMarker.name;
