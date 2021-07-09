@@ -80,7 +80,7 @@ namespace GTA_Map.Controllers
             }
             await _context.SaveChangesAsync();
 
-            return NoContent();
+            return AcceptedAtAction("DeleteMarker");
         }
     }
 }

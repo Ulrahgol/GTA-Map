@@ -55,7 +55,7 @@ declare var $: any;
         });
       }
 
-      deletePrompt(){
+      toggleDeletePrompt(){
         this.deleting = !this.deleting;
       }
 

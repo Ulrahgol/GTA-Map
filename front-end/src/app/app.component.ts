@@ -110,6 +110,7 @@ marker = marker([ 0, 0 ], {
             this.map.addLayer(newMarker.bindPopup( fl => {
               const popupEl: NgElement & WithProperties<PopupComponent> = document.createElement('popup-element') as any;
               // Listen to the close event
+              popupEl.map = this.map;
               popupEl.mapMarker = newMarker;
               popupEl.markerId = customMarker.id;
               popupEl.name = customMarker.name;
@@ -123,12 +124,6 @@ marker = marker([ 0, 0 ], {
         }   
         })
   }
-
-  // removeLayer(marker: Marker){
-  //   const latlng: LatLng = marker.getLatLng();
-  //   this.map.removeLayer(marker)
-  //   this.markerService.deleteMarker(latlng.lat, latlng.lng).subscribe(()=> { });
-  // }
 
   login(obj: any){
     this.accountService.login(new Account(obj.username, obj.password)).subscribe((account) => {
