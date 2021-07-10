@@ -13,7 +13,6 @@ export class AccountService {
     constructor(private http: HttpClient) {}
 
     public login(account: Account): Observable<Account> {
-        console.log(account);
         return this.http.post<Account>(`${environment.api}/Account`, account, httpOptions);
     }
 }

@@ -1,6 +1,6 @@
 
 
- <form class="example-form" *ngIf="!deleting">
+ <form class="example-form" *ngIf="!deleting && !settings && !colorPicker">
     <div fxLayout="row" >
         <mat-form-field appearance="fill">
         <mat-label>Name</mat-label>
@@ -18,6 +18,7 @@
 
      <div fxLayout="row" fxLayoutAlign="space-between end">
         <button mat-flat-button color="primary" (click)="updateMarker()">Save</button>
+        <button mat-stroked-button color="basic" class="settingsButton" (click)="toggleSettings()"><span class="material-icons">settings</span></button>
         <button mat-flat-button color="warn" (click)="toggleDeletePrompt()">Delete</button>
      </div>
  </form>
@@ -30,4 +31,39 @@
      </div>
  </div>
 
+ <div *ngIf="settings && !colorPicker" fxLayout="column" fxLayoutAlign="space-between stretch">
+   <div>
+      <mat-tab-group>
+         <mat-tab> 
+            <ng-template mat-tab-label>
+               <span class="material-icons">palette</span>
+            </ng-template>
+            <div class="tabbedContent" fxLayoutAlign="start center" fxLayoutGap="2px">
+               <button mat-flat-button color="basic" class="colorPresetButton" (click)="selectColor(color)" *ngFor="let color of colors">
+                  <div class="colorPreset" style="background-color: {{color.colorCode}};"></div>
+               </button>
+               <div>
+                  <button mat-flat-button color="basic" class="colorAdd" (click)="toggleColorPicker()" fxLayoutAlign="center center">
+                     <span class="material-icons">add</span>
+                  </button>
+               </div>
+            </div>
+         </mat-tab>
+      </mat-tab-group>       
+   </div>
+   <div fxLayout="row" fxLayoutAlign="space-between end">
+      <button mat-flat-button color="primary" (click)="updateMarker(); toggleSettings();">Save</button>
+      <button mat-flat-button color="warn" (click)="toggleSettings();">Back</button>
+   </div>
+</div>
+
+
+<div *ngIf="colorPicker">
+   <div><color-sketch [(color)]="state" (onChangeComplete)="changeComplete($event)"></color-sketch></div>
+   <!-- <div><input matInput id="name" [(value])=""></div> -->
+   <div fxLayout="row" fxLayoutAlign="space-between end">
+      <button mat-flat-button color="primary" (click)="addColor()">Add</button>
+      <button mat-flat-button color="warn" (click)="toggleColorPicker()">Back</button>
+   </div>
+</div>
 

@@ -1,6 +1,5 @@
-import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
-import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from "@angular/forms";
-import { MatCardModule } from '@angular/material/card';
+import { Component, EventEmitter, Input, Output } from "@angular/core";
+import { FormControl, FormGroup } from "@angular/forms";
 
 @Component({
     selector: 'login',
@@ -16,8 +15,6 @@ import { MatCardModule } from '@angular/material/card';
     submit() {
       if (this.form.valid) {
         this.submitEM.emit(this.form.value);
-        console.log(this.error);
-        
       }
     }
     @Input() error: string;

@@ -16,6 +16,9 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
 import { AccountService } from './services/accountService';
 import { FlexLayoutModule } from '@angular/flex-layout';
+import { MatTabsModule } from '@angular/material/tabs';
+import { ColorService } from './services/ColorService';
+import { ColorSketchModule } from 'ngx-color/sketch';
 
 @NgModule({
   declarations: [
@@ -35,9 +38,11 @@ import { FlexLayoutModule } from '@angular/flex-layout';
     FormsModule,
     ReactiveFormsModule,
     MatCardModule,
-    FlexLayoutModule
+    FlexLayoutModule,
+    MatTabsModule,
+    ColorSketchModule
   ],
-  providers: [MarkerService,AccountService],
+  providers: [MarkerService,AccountService, ColorService],
   bootstrap: [AppComponent],
   entryComponents: [PopupComponent]
 })

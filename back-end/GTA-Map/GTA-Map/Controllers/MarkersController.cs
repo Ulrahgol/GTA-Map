@@ -24,22 +24,36 @@ namespace GTA_Map.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Marker>>> GetMarker()
         {
-            List<Marker> markers = await _context.Markers.ToListAsync();
-            return markers;
+            try
+            {
+                List<Marker> markers = await _context.Markers.Include(marker => marker.Color).ToListAsync();
+                return markers;
+            }
+            catch(Exception ex)
+            {
+                throw;
+            }
         }
 
         // GET: api/Markers/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Marker>> GetMarker(int id)
         {
-            var marker = await _context.Markers.FindAsync(id);
-
-            if (marker == null)
+            try
             {
-                return NotFound();
-            }
+                var marker = await _context.Markers.FindAsync(id);
 
-            return marker;
+                if (marker == null)
+                {
+                    return NotFound();
+                }
+
+                return marker;
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
         }
 
         // POST: api/Markers
@@ -47,10 +61,18 @@ namespace GTA_Map.Controllers
         [HttpPost]
         public async Task<ActionResult<Marker>> PostMarker([FromBody] Marker marker)
         {
-            _context.Markers.Add(marker);
-            await _context.SaveChangesAsync();
+            try
+            {
+                marker.Color = _context.Colors.Find(marker.Color.Id);
+                _context.Markers.Add(marker);
+                await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetMarker", new { id = marker.Id }, marker);
+                return CreatedAtAction("GetMarker", new { id = marker.Id }, marker);
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
         }
 
         // POST: api/Markers
@@ -58,29 +80,40 @@ namespace GTA_Map.Controllers
         [HttpPost("{id}")]
         public async Task<ActionResult<Marker>> UpdateMarker([FromBody] Marker marker)
         {
-            Marker updatedMarker = _context.Markers.Update(marker).Entity;
-            await _context.SaveChangesAsync();
+            try
+            {
+                Marker updatedMarker = _context.Markers.Update(marker).Entity;
+                await _context.SaveChangesAsync();
 
-            return AcceptedAtAction("GetMarker", new { id = marker.Id }, updatedMarker);
+                return AcceptedAtAction("UpdateMarker", new { id = marker.Id }, updatedMarker);
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
         }
 
         // DELETE: api/Markers/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteMarker(int id)
         {
-            List<Marker> markers = _context.Markers.Where(x => x.Id == id).ToList();
-            if (markers == null || markers.Count == 0)
+            try
             {
-                return NotFound();
-            }
+                Marker marker = _context.Markers.Find(id);
+                if (marker == null)
+                {
+                    return NotFound();
+                }
 
-            foreach(Marker marker in markers)
-            {
                 _context.Markers.Remove(marker);
-            }
-            await _context.SaveChangesAsync();
+                await _context.SaveChangesAsync();
 
-            return AcceptedAtAction("DeleteMarker");
+                return AcceptedAtAction("DeleteMarker");
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
         }
     }
 }

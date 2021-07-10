@@ -1,3 +1,54 @@
 mat-form-field {
     width: 100%;
 }
+
+.mat-tab-label {
+    min-width: 25px !important;
+    padding: 5px;
+    background-color: transparent;
+}
+
+/* Styles for the active tab label */
+.mat-tab-label.mat-tab-label-active {
+    min-width: 25px !important;
+    padding: 5px;
+    background-color: transparent;
+}
+
+.colorAdd{
+    padding: 0px;
+    height: 24px;
+    min-width: 24px;
+}
+
+.colorPreset {
+    height: 24px;
+    width: 24px;
+    border-radius: 0.2rem;
+}
+
+.colorPresetButton{
+    padding:0px;
+    margin:0px;
+    min-width:24px;
+}
+
+.tabbedContent {
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+.settingsButton {
+    padding-left: 0px;
+    padding-right: 0px;
+    min-width: 36px;
+}
+
+.sketch-swatches-container, .alpha, .sketch-alpha {
+    display: none !important;
+}
+
+.sketch-picker {
+    margin-top: 19px;
+    margin-bottom: 10px;
+}
