@@ -24,22 +24,36 @@ namespace GTA_Map.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Color>>> GetColors()
         {
-            List<Color> colors = await _context.Colors.ToListAsync();
-            return colors;
+            try
+            {
+                List<Color> colors = await _context.Colors.OrderBy(x => x.Id).ToListAsync();
+                return colors;
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
         }
 
         // GET: api/Markers/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Color>> GetColorById(int id)
         {
-            Color color = await _context.Colors.FindAsync(id);
-
-            if (color == null)
+            try
             {
-                return NotFound();
-            }
+                Color color = await _context.Colors.FindAsync(id);
 
-            return color;
+                if (color == null)
+                {
+                    return NotFound();
+                }
+
+                return color;
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
         }
 
         // POST: api/Markers
@@ -47,10 +61,17 @@ namespace GTA_Map.Controllers
         [HttpPost]
         public async Task<ActionResult<Color>> AddColor([FromBody] Color color)
         {
-            _context.Colors.Add(color);
-            await _context.SaveChangesAsync();
+            try
+            {
+                _context.Colors.Add(color);
+                await _context.SaveChangesAsync();
 
-            return CreatedAtAction("AddColor", new { id = color.Id }, color);
+                return CreatedAtAction("AddColor", new { id = color.Id }, color);
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
         }
 
 
@@ -58,16 +79,33 @@ namespace GTA_Map.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteColor(int id)
         {
-            Color color = _context.Colors.Find(id);
-            if (color == null)
+            try
             {
-                return NotFound();
+                Color color = _context.Colors.Find(id);
+                if (color == null)
+                {
+                    return NotFound();
+                }
+
+                List<Marker> markers = _context.Markers.Where(x => x.ColorId == id).ToList();
+                Color standardColor = _context.Colors.Find(1);
+                foreach (Marker marker in markers)
+                {
+                    marker.ColorId = standardColor.Id;
+                    marker.Color = standardColor;
+                    _context.Markers.Update(marker);
+                }
+
+
+                _context.Colors.Remove(color);
+                await _context.SaveChangesAsync();
+
+                return AcceptedAtAction("DeleteColor");
             }
-
-            _context.Colors.Remove(color);
-            await _context.SaveChangesAsync();
-
-            return AcceptedAtAction("DeleteMarker");
+            catch (Exception ex)
+            {
+                throw;
+            }
         }
     }
 }

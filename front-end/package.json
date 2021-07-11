@@ -30,6 +30,7 @@
     "leaflet": "^1.7.1",
     "material-components-web": "^11.0.0",
     "ngx-color": "^7.2.0",
+    "ngx-contextmenu": "^6.0.0",
     "rxjs": "~6.6.0",
     "ts-md5": "^1.2.9",
     "tslib": "^2.1.0",

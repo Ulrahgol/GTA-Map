@@ -1,7 +1,8 @@
-import { Component, OnInit, Input, ViewEncapsulation, Output, EventEmitter } from "@angular/core";
+import { Component, OnInit, Input, ViewEncapsulation, Output, EventEmitter, ViewChild } from "@angular/core";
 import { NgElement, WithProperties } from "@angular/elements";
 import { Layer, Map } from "leaflet";
 import { ColorEvent } from "ngx-color";
+import { ContextMenuComponent } from "ngx-contextmenu";
 import { Color } from "../models/Color";
 import { CustomMarker } from "../models/customMarker";
 import { ColorService } from "../services/ColorService";
@@ -16,64 +17,39 @@ declare var $: any;
   })
   export class PopupComponent implements OnInit {
   
-    @Input() markerId: number = 0;
-    @Input() name: string = "";
-    @Input() notes: string = "";
-    @Input() latitude: number = 0;
-    @Input() longitude: number = 0;
-    @Input() mapMarker: Layer;
-    @Input() map: Map;
-    @Input() state: string;
-    @Input() color: Color;
+    @Input() mapMarker: CustomMarker;
 
-    @Output() colorChanged = new EventEmitter<[CustomMarker, Layer]>();
+    @Output() markerUpdated = new EventEmitter<CustomMarker>();
+    @Output() markerDeleted = new EventEmitter<CustomMarker>();
+    @Output() colorDeleted = new EventEmitter<[Color, Color]>();
 
     deleting: Boolean = false;
     settings: Boolean = false;
     colorPicker: Boolean = false;
+    colorDeleting: Boolean = false;
 
+    colorToDelete: Color;
+    @ViewChild(ContextMenuComponent) public basicMenu: ContextMenuComponent;
+
+    standardColor: Color;
     colors: Color[] = [];
+    colorState: string;
 
-    constructor(private markerService: MarkerService, private colorService: ColorService) {
+    constructor(private colorService: ColorService) {
     }
   
     ngOnInit() {
       this.getColors();
+      this.colorState = this.mapMarker.color.colorCode
     }
 
     public updateMarker(){
-      let name = $('#name').val();
-      let notes = $('#notes').val();        
-      this.reinitMarker(name, notes);
-      }
+      this.markerUpdated.emit(this.mapMarker);
+    }
 
-      public reinitMarker(name: string = this.name, notes: string = this.notes, colorCode: string = this.state)
-      {
-        let customMarker = new CustomMarker();
-        customMarker.id = this.markerId;
-        customMarker.name = name;
-        customMarker.notes = notes;
-        customMarker.latitude = this.latitude;
-        customMarker.longitude = this.longitude;
-
-        customMarker.color = this.color;
-        customMarker.colorId = this.color.id;
-        customMarker.color.colorCode = colorCode;
-
-        this.markerService.updateMarker(customMarker).subscribe(() => {
-            this.mapMarker.bindPopup( fl => {
-                const popupEl: NgElement & WithProperties<PopupComponent> = document.createElement('popup-element') as any;
-                popupEl.map = this.map;
-                popupEl.mapMarker = this.mapMarker;
-                popupEl.markerId = customMarker.id;
-                popupEl.name = customMarker.name;
-                popupEl.notes = customMarker.notes;
-                popupEl.latitude = customMarker.latitude;
-                popupEl.longitude = customMarker.longitude;
-                return popupEl;
-              })
-        });
-      }
+    public deleteMarker(){
+      this.markerDeleted.emit(this.mapMarker); 
+    }
 
       handleChange($event: ColorEvent) {
         console.log($event.color);
@@ -91,64 +67,44 @@ declare var $: any;
         this.colorPicker = !this.colorPicker;
       }
 
+      public toggleColorDeleting(color: Color = new Color()){
+        this.colorDeleting = !this.colorDeleting;        
+        this.colorToDelete = color;
+      }
+
       public changeComplete(event: any){
-        this.state = event.color.hex;
+        this.colorState = event.color.hex;
       }
 
       getColors(){
         this.colorService.getColors().subscribe((colors: Color[]) => {
+          const index = colors.findIndex(x => x.id == 1);
+          this.standardColor = colors.splice(index, 1)[0];
           this.colors = colors;
         });
       }
 
       public addColor(){
         const color: Color = new Color();
-        color.colorCode = this.state;
+        color.colorCode = this.colorState;
         this.colorService.addColor(color).subscribe((newColor: Color) => {
           this.colors.push(newColor);
-
-          let customMarker: CustomMarker = new CustomMarker();
-          customMarker.id = this.markerId;
-          customMarker.latitude = this.latitude
-          customMarker.longitude = this.longitude
-          customMarker.name = this.name
-          customMarker.notes = this.notes
-          customMarker.colorId = color.id;;
-          customMarker.color = color;
-
-          this.colorChanged.emit([customMarker, this.mapMarker]);
           this.toggleColorPicker();
         });
       }
 
       public selectColor(color: Color){
-        this.color = color;
-        this.state = color.colorCode;
-
-        let customMarker: CustomMarker = new CustomMarker();
-        customMarker.id = this.markerId;
-        customMarker.latitude = this.latitude
-        customMarker.longitude = this.longitude
-        customMarker.name = this.name
-        customMarker.notes = this.notes
-        customMarker.colorId = color.id;;
-        customMarker.color = color;
-        
-        this.colorChanged.emit([customMarker, this.mapMarker]);
-        this.reinitMarker();
+        this.mapMarker.color = color;
+        this.mapMarker.colorId = color.id;
+        this.updateMarker();
       }
 
-      public deleteColor(id: number){
-        this.colorService.deleteColor(id).subscribe(() => {
-          const index = this.colors.findIndex(x => x.id == id);
-          this.colors.splice(index);
+      public deleteColor(){
+        this.colorService.deleteColor(this.colorToDelete.id).subscribe(() => {
+          const index = this.colors.findIndex(x => x.id == this.colorToDelete.id);
+          const deletedColor: Color = this.colors.splice(index)[0];
+          this.colorDeleted.emit([deletedColor, this.standardColor]);
+          this.colorDeleting = false;
         });
-      }
-
-      public deleteMarker(){
-        this.markerService.deleteMarker(this.markerId).subscribe(() => {
-          this.map.removeLayer(this.mapMarker);
-        });   
-      }
-  
+      }  
   }

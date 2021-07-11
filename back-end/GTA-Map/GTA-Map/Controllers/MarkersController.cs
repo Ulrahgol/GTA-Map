@@ -82,7 +82,11 @@ namespace GTA_Map.Controllers
         {
             try
             {
+                Color color = _context.Colors.Find(marker.ColorId);
+                marker.Color = color;
+                marker.ColorId = color.Id;
                 Marker updatedMarker = _context.Markers.Update(marker).Entity;
+
                 await _context.SaveChangesAsync();
 
                 return AcceptedAtAction("UpdateMarker", new { id = marker.Id }, updatedMarker);

@@ -25,6 +25,7 @@ mat-form-field {
     height: 24px;
     width: 24px;
     border-radius: 0.2rem;
+    margin-bottom: 4px;
 }
 
 .colorPresetButton{
@@ -36,6 +37,8 @@ mat-form-field {
 .tabbedContent {
     padding-top: 10px;
     padding-bottom: 10px;
+    display: flex;
+    flex-flow: row wrap;
 }
 
 .settingsButton {
@@ -51,4 +54,8 @@ mat-form-field {
 .sketch-picker {
     margin-top: 19px;
     margin-bottom: 10px;
+}
+
+.contextMenuDelete{
+    color: #f44336;
 }

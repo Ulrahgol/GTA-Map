@@ -1,17 +1,17 @@
 
 
- <form class="example-form" *ngIf="!deleting && !settings && !colorPicker">
+ <div class="example-form" *ngIf="!deleting && !settings && !colorPicker">
     <div fxLayout="row" >
         <mat-form-field appearance="fill">
         <mat-label>Name</mat-label>
-        <input matInput id="name" value="{{name}}">
+        <input matInput id="name" [(ngModel)]="mapMarker.name">
         </mat-form-field>
     </div> 
 
      <div fxLayout="row" >
         <mat-form-field appearance="fill">
         <mat-label>Notes</mat-label>
-        <textarea matInput id="notes">{{notes}}</textarea>
+        <textarea matInput id="notes" [(ngModel)]="mapMarker.notes"></textarea>
         </mat-form-field>
      </div> 
      
@@ -21,7 +21,7 @@
         <button mat-stroked-button color="basic" class="settingsButton" (click)="toggleSettings()"><span class="material-icons">settings</span></button>
         <button mat-flat-button color="warn" (click)="toggleDeletePrompt()">Delete</button>
      </div>
- </form>
+   </div>
 
  <div *ngIf="deleting" fxLayout="column" fxLayoutAlign="space-between stretch">
      <div style="padding-bottom: 20px;">Are you sure you want to delete this marker?</div>
@@ -31,15 +31,18 @@
      </div>
  </div>
 
- <div *ngIf="settings && !colorPicker" fxLayout="column" fxLayoutAlign="space-between stretch">
+ <div *ngIf="settings && !colorPicker && !colorDeleting" fxLayout="column" fxLayoutAlign="space-between stretch">
    <div>
       <mat-tab-group>
          <mat-tab> 
             <ng-template mat-tab-label>
                <span class="material-icons">palette</span>
             </ng-template>
-            <div class="tabbedContent" fxLayoutAlign="start center" fxLayoutGap="2px">
-               <button mat-flat-button color="basic" class="colorPresetButton" (click)="selectColor(color)" *ngFor="let color of colors">
+            <div class="tabbedContent" fxLayoutAlign="start center" fxLayoutGap="4px">
+               <button mat-flat-button color="basic" class="colorPresetButton" (click)="selectColor(color)">
+                  <div class="colorPreset" style="background-color: {{standardColor.colorCode}};"></div>
+               </button>
+               <button mat-flat-button color="basic" class="colorPresetButton" (click)="selectColor(color)" [contextMenu]="basicMenu" [contextMenuSubject]="color" *ngFor="let color of colors">
                   <div class="colorPreset" style="background-color: {{color.colorCode}};"></div>
                </button>
                <div>
@@ -59,11 +62,26 @@
 
 
 <div *ngIf="colorPicker">
-   <div><color-sketch [(color)]="state" (onChangeComplete)="changeComplete($event)"></color-sketch></div>
-   <!-- <div><input matInput id="name" [(value])=""></div> -->
+   <div><color-sketch [(color)]="colorState" (onChangeComplete)="changeComplete($event)"></color-sketch></div>
    <div fxLayout="row" fxLayoutAlign="space-between end">
       <button mat-flat-button color="primary" (click)="addColor()">Add</button>
       <button mat-flat-button color="warn" (click)="toggleColorPicker()">Back</button>
    </div>
 </div>
+
+<div *ngIf="settings && colorDeleting">
+   <div style="padding-bottom: 20px;">Are you sure you want to delete this color preset? Doing so will reset all markers using this color to the default color.</div>
+   <div fxLayout="row" fxLayoutAlign="space-between end">
+      <button mat-flat-button color="warn" (click)="deleteColor()">Yes</button>
+      <button mat-flat-button color="primary" (click)="toggleColorDeleting()">No</button>
+   </div>
+</div>
+
+<context-menu>
+   <ng-template contextMenuItem (execute)="toggleColorDeleting($event.item)">
+     <div class="contextMenuDelete">
+        Delete
+     </div> 
+   </ng-template>
+ </context-menu>
 

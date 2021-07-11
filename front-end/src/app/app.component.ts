@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { NgElement, WithProperties } from '@angular/elements';
-import { latLng, Map, marker, tileLayer, Layer, LatLngBounds, divIcon, LayerGroup } from 'leaflet';
+import { latLng, Map, tileLayer, Layer, LatLngBounds, divIcon, LayerGroup } from 'leaflet';
 import { CustomMarker } from './models/customMarker';
 import { PopupComponent } from './popup/popup.component';
 import { MarkerService } from './services/MarkerService';
@@ -15,7 +15,8 @@ import { Color } from './models/Color';
 })
 export class AppComponent {
   title = 'Business Map';
-  markers: Layer[] = [];
+  markers: LayerGroup = new LayerGroup();
+  layerGroups: LayerGroup[] = [this.markers];
   map: Map;
   loggedIn: boolean = false;
   error: string
@@ -52,30 +53,7 @@ export class AppComponent {
     // Get and display all markers
     this.markerService.getMarkers().subscribe((markers: CustomMarker[]) => {
       markers.forEach((customMarker: CustomMarker) => {
-          const newMarker = marker([customMarker.latitude, customMarker.longitude], {
-            icon: divIcon({
-              iconSize: [ 25, 41 ],
-              iconAnchor: [ 19, 41 ],
-              popupAnchor: [2, -36],
-              html: `<i class="material-icons markerIcon" style="font-size:40px;height:40px;color:${customMarker.color.colorCode};">place</i>`,
-              className: ''
-            })
-          })
-    
-          this.map.addLayer(newMarker.bindPopup( fl => {
-            const popupEl: NgElement & WithProperties<PopupComponent> = document.createElement('popup-element') as any;
-            popupEl.addEventListener("colorChanged", ($event) => { this.colorChangedEventHandler($event); })
-            popupEl.map = this.map;
-            popupEl.mapMarker = newMarker;
-            popupEl.markerId = customMarker.id;
-            popupEl.name = customMarker.name;
-            popupEl.notes = customMarker.notes;
-            popupEl.latitude = customMarker.latitude;
-            popupEl.longitude = customMarker.longitude;
-            popupEl.state = customMarker.color.colorCode;
-            popupEl.color = customMarker.color;
-            return popupEl;
-          }))
+        this.addMarker(customMarker);
       })
     }, (error) => {
       console.log(error);
@@ -83,55 +61,62 @@ export class AppComponent {
   }
 
   addMapMarkerHandler(){
-        // Add listener to the map to make new markers
-        this.map.addEventListener("click", (event: any) => {  
-          if (event.originalEvent.ctrlKey) {
-            let customMarker: CustomMarker = new CustomMarker();
-            let newMarker: Layer;
-            if (event.originalEvent.ctrlKey) {
-            customMarker.latitude = event.latlng.lat;
-            customMarker.longitude = event.latlng.lng;
+    // Add listener to the map to make new markers
+    this.map.addEventListener("click", (event: any) => {
+        if (event.originalEvent.ctrlKey) {
+          let customMarker: CustomMarker = new CustomMarker([event.latlng.lat,event.latlng.lng]);
+          const color: Color = new Color();
+          color.id = 1
+          color.colorCode = "#555555";
+          customMarker.color = color;
 
-            const color: Color = new Color();
-            color.id = 1
-            color.colorCode = "#555555";
-            customMarker.color = color;
-
-            this.markerService.makeMarker(customMarker).subscribe((r)=> { customMarker = r; });
-            newMarker = marker([event.latlng.lat, event.latlng.lng], {
-              icon: divIcon({
-                iconSize: [ 25, 41 ],
-                iconAnchor: [ 19, 41 ],
-                popupAnchor: [2, -36],
-                html: `<i class="material-icons markerIcon" style="font-size:40px;height:40px;color:${customMarker.color.colorCode};">place</i>`,
-                className: ''
-              })
-            });
-            this.map.addLayer(newMarker.bindPopup( fl => {
-              const popupEl: NgElement & WithProperties<PopupComponent> = document.createElement('popup-element') as any;
-              popupEl.addEventListener("colorChanged", ($event) => { this.colorChangedEventHandler($event); })
-              popupEl.map = this.map;
-              popupEl.mapMarker = newMarker;
-              popupEl.markerId = customMarker.id;
-              popupEl.name = customMarker.name;
-              popupEl.notes = customMarker.notes;
-              popupEl.latitude = customMarker.latitude;
-              popupEl.longitude = customMarker.longitude;
-              popupEl.state = customMarker.color.colorCode;
-              popupEl.color = color;
-              return popupEl;
-            }))
-          }
-        }   
-        })
+          this.markerService.makeMarker(customMarker).subscribe((res)=> { 
+            this.addMarker(res);
+          });
+        }
+    })
   }
-  
-  colorChangedEventHandler(event: any){
-    const customMarker: CustomMarker = event.detail[0];
-    const oldMarker: Layer = event.detail[1];
-    this.map.removeLayer(oldMarker);
 
-    const newMarker = marker([customMarker.latitude, customMarker.longitude], {
+  markerUpdatedEventHandler(event: any){
+    console.log(event.detail);
+    this.markerService.updateMarker(event.detail).subscribe((marker: CustomMarker) => {
+      console.log(marker);
+      const layerId = this.markers.getLayerId(event.detail);
+      const layer = this.markers.getLayer(layerId);
+      if(layer){
+        this.markers.removeLayer(layer);
+        this.addMarker(marker);
+      }
+    });
+  }
+
+  markerDeletedEventHandler(event: any){
+    const layerId = this.markers.getLayerId(event.detail);
+    const layer = this.markers.getLayer(layerId);
+    if(layer){
+      this.markerService.deleteMarker(event.detail.id).subscribe(() => {
+        this.markers.removeLayer(layer);
+      }); 
+    }
+  }
+
+  colorDeletedEventHandler(event: any){
+    const deletedColor: Color = event.detail[0];
+    const standardColor: Color = event.detail[1];
+
+    this.markers.getLayers().forEach((layer: Layer) => {
+      let marker: CustomMarker = (layer as CustomMarker);
+        if(marker.color.colorCode == deletedColor.colorCode ){
+            this.map.removeLayer(layer);
+            marker.color = standardColor;
+            marker.colorId = standardColor.id;
+            this.addMarker(marker);
+        }
+    });
+  }
+
+  addMarker(customMarker: CustomMarker){
+    let completeCustomMarker: CustomMarker = new CustomMarker([customMarker.latitude, customMarker.longitude], {
       icon: divIcon({
         iconSize: [ 25, 41 ],
         iconAnchor: [ 19, 41 ],
@@ -139,20 +124,14 @@ export class AppComponent {
         html: `<i class="material-icons markerIcon" style="font-size:40px;height:40px;color:${customMarker.color.colorCode};">place</i>`,
         className: ''
       })
-    });
+    },customMarker.id, customMarker.name, customMarker.notes, customMarker.colorId, customMarker.color);
 
-    this.map.addLayer(newMarker.bindPopup( fl => {
+    this.markers.addLayer(completeCustomMarker.bindPopup( fl => {
       const popupEl: NgElement & WithProperties<PopupComponent> = document.createElement('popup-element') as any;
-      popupEl.addEventListener("colorChanged", ($event) => { this.colorChangedEventHandler($event); })
-      popupEl.map = this.map;
-      popupEl.mapMarker = newMarker;
-      popupEl.markerId = customMarker.id;
-      popupEl.name = customMarker.name;
-      popupEl.notes = customMarker.notes;
-      popupEl.latitude = customMarker.latitude;
-      popupEl.longitude = customMarker.longitude;
-      popupEl.state = customMarker.color.colorCode;
-      popupEl.color = customMarker.color;
+      popupEl.addEventListener("markerUpdated", ($event) => { this.markerUpdatedEventHandler($event); })
+      popupEl.addEventListener("markerDeleted", ($event) => { this.markerDeletedEventHandler($event); })
+      popupEl.addEventListener("colorDeleted", ($event) => { this.colorDeletedEventHandler($event); })
+      popupEl.mapMarker = completeCustomMarker;
       return popupEl;
     }))
   }

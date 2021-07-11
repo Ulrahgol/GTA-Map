@@ -16,11 +16,30 @@ export class MarkerService {
     }
 
     public makeMarker(customMarker: CustomMarker): Observable<CustomMarker> {
-        return this.http.post<CustomMarker>(`${environment.api}/Markers`, customMarker, httpOptions);
+        const marker = {
+            id: customMarker.id,
+            latitude: customMarker.latitude,
+            longitude: customMarker.longitude,
+            name: customMarker.name,
+            notes: customMarker.notes,
+            colorId: customMarker.colorId,
+            color: customMarker.color,
+        };
+        return this.http.post<CustomMarker>(`${environment.api}/Markers`, marker, httpOptions);
     }
 
     public updateMarker(customMarker: CustomMarker): Observable<CustomMarker> {
-        return this.http.post<CustomMarker>(`${environment.api}/Markers/${customMarker.id}`, customMarker, httpOptions);
+        console.log(customMarker);
+        const marker = {
+            id: customMarker.id,
+            latitude: customMarker.latitude,
+            longitude: customMarker.longitude,
+            name: customMarker.name,
+            notes: customMarker.notes,
+            colorId: customMarker.colorId,
+            color: customMarker.color,
+        };
+        return this.http.post<CustomMarker>(`${environment.api}/Markers/${marker.id}`, marker, httpOptions);
     }
 
     public deleteMarker(id: number): Observable<CustomMarker> {

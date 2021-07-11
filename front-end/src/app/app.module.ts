@@ -19,6 +19,7 @@ import { FlexLayoutModule } from '@angular/flex-layout';
 import { MatTabsModule } from '@angular/material/tabs';
 import { ColorService } from './services/ColorService';
 import { ColorSketchModule } from 'ngx-color/sketch';
+import { ContextMenuModule } from 'ngx-contextmenu';
 
 @NgModule({
   declarations: [
@@ -40,7 +41,8 @@ import { ColorSketchModule } from 'ngx-color/sketch';
     MatCardModule,
     FlexLayoutModule,
     MatTabsModule,
-    ColorSketchModule
+    ColorSketchModule,
+    ContextMenuModule.forRoot()
   ],
   providers: [MarkerService,AccountService, ColorService],
   bootstrap: [AppComponent],
