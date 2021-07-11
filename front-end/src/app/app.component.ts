@@ -3,10 +3,10 @@ import { NgElement, WithProperties } from '@angular/elements';
 import { latLng, Map, tileLayer, Layer, LatLngBounds, divIcon, LayerGroup } from 'leaflet';
 import { CustomMarker } from './models/customMarker';
 import { PopupComponent } from './popup/popup.component';
-import { MarkerService } from './services/MarkerService';
-import { AccountService } from './services/accountService';
+import { MarkerService } from './services/marker.service';
+import { AccountService } from './services/account.service';
 import { Account } from './models/account';
-import { Color } from './models/Color';
+import { Color } from './models/color';
 
 @Component({
   selector: 'app-root',

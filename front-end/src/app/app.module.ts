@@ -6,7 +6,7 @@ import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { MarkerService } from './services/MarkerService';
+import { MarkerService } from './services/marker.service';
 import { HttpClientModule } from '@angular/common/http';
 import { PopupComponent } from './popup/popup.component';
 import { createCustomElement } from '@angular/elements';
@@ -14,10 +14,10 @@ import { MatButtonModule } from '@angular/material/button'
 import { LoginComponent } from './login/login.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
-import { AccountService } from './services/accountService';
+import { AccountService } from './services/account.service';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { MatTabsModule } from '@angular/material/tabs';
-import { ColorService } from './services/ColorService';
+import { ColorService } from './services/color.service';
 import { ColorSketchModule } from 'ngx-color/sketch';
 import { ContextMenuModule } from 'ngx-contextmenu';
 

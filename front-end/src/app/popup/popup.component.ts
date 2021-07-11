@@ -3,10 +3,10 @@ import { NgElement, WithProperties } from "@angular/elements";
 import { Layer, Map } from "leaflet";
 import { ColorEvent } from "ngx-color";
 import { ContextMenuComponent } from "ngx-contextmenu";
-import { Color } from "../models/Color";
+import { Color } from "../models/color";
 import { CustomMarker } from "../models/customMarker";
-import { ColorService } from "../services/ColorService";
-import { MarkerService } from "../services/MarkerService";
+import { ColorService } from "../services/color.service";
+import { MarkerService } from "../services/marker.service";
 declare var $: any;
 
 @Component({

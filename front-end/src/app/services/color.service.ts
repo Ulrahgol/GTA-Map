@@ -3,7 +3,7 @@ import { HttpClient, HttpHeaders } from "@angular/common/http";
 import { Observable } from "rxjs"
 import { environment } from "../../environments/environment"
 import { CustomMarker } from "../models/customMarker";
-import { Color } from "../models/Color";
+import { Color } from "../models/color";
 
 const httpOptions = { headers: new HttpHeaders({"Content-Type": "application/json"}), };
 

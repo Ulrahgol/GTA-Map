@@ -1,5 +1,5 @@
 import { LatLngExpression, LatLngTuple, Marker, MarkerOptions } from "leaflet";
-import { Color } from "./Color";
+import { Color } from "./color";
 
 export class CustomMarker extends Marker {
 
