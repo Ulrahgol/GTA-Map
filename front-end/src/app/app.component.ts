@@ -117,7 +117,7 @@ export class AppComponent {
     let completeCustomMarker: CustomMarker = new CustomMarker([customMarker.latitude, customMarker.longitude], {
       icon: divIcon({
         iconSize: [ 25, 41 ],
-        iconAnchor: [ 19, 41 ],
+        iconAnchor: [ 19, 37 ],
         popupAnchor: [2, -36],
         html: `<i class="material-icons markerIcon" style="font-size:40px;height:40px;color:${customMarker.color.colorCode};">place</i>`,
         className: ''
