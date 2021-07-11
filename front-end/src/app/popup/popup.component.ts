@@ -51,60 +51,56 @@ declare var $: any;
       this.markerDeleted.emit(this.mapMarker); 
     }
 
-      handleChange($event: ColorEvent) {
-        console.log($event.color);
-      }
+    public toggleDeletePrompt(){
+      this.deleting = !this.deleting;
+    }
 
-      public toggleDeletePrompt(){
-        this.deleting = !this.deleting;
-      }
+    public toggleSettings(){
+      this.settings = !this.settings;
+    }
 
-      public toggleSettings(){
-        this.settings = !this.settings;
-      }
+    public toggleColorPicker(){
+      this.colorPicker = !this.colorPicker;
+    }
 
-      public toggleColorPicker(){
-        this.colorPicker = !this.colorPicker;
-      }
+    public toggleColorDeleting(color: Color = new Color()){
+      this.colorDeleting = !this.colorDeleting;        
+      this.colorToDelete = color;
+    }
 
-      public toggleColorDeleting(color: Color = new Color()){
-        this.colorDeleting = !this.colorDeleting;        
-        this.colorToDelete = color;
-      }
+    public changeComplete(event: any){
+      this.colorState = event.color.hex;
+    }
 
-      public changeComplete(event: any){
-        this.colorState = event.color.hex;
-      }
+    getColors(){
+      this.colorService.getColors().subscribe((colors: Color[]) => {
+        const index = colors.findIndex(x => x.id == 1);
+        this.standardColor = colors.splice(index, 1)[0];
+        this.colors = colors;
+      });
+    }
 
-      getColors(){
-        this.colorService.getColors().subscribe((colors: Color[]) => {
-          const index = colors.findIndex(x => x.id == 1);
-          this.standardColor = colors.splice(index, 1)[0];
-          this.colors = colors;
-        });
-      }
+    public addColor(){
+      const color: Color = new Color();
+      color.colorCode = this.colorState;
+      this.colorService.addColor(color).subscribe((newColor: Color) => {
+        this.colors.push(newColor);
+        this.toggleColorPicker();
+      });
+    }
 
-      public addColor(){
-        const color: Color = new Color();
-        color.colorCode = this.colorState;
-        this.colorService.addColor(color).subscribe((newColor: Color) => {
-          this.colors.push(newColor);
-          this.toggleColorPicker();
-        });
-      }
+    public selectColor(color: Color){
+      this.mapMarker.color = color;
+      this.mapMarker.colorId = color.id;
+      this.updateMarker();
+    }
 
-      public selectColor(color: Color){
-        this.mapMarker.color = color;
-        this.mapMarker.colorId = color.id;
-        this.updateMarker();
-      }
-
-      public deleteColor(){
-        this.colorService.deleteColor(this.colorToDelete.id).subscribe(() => {
-          const index = this.colors.findIndex(x => x.id == this.colorToDelete.id);
-          const deletedColor: Color = this.colors.splice(index)[0];
-          this.colorDeleted.emit([deletedColor, this.standardColor]);
-          this.colorDeleting = false;
-        });
-      }  
+    public deleteColor(){
+      this.colorService.deleteColor(this.colorToDelete.id).subscribe(() => {
+        const index = this.colors.findIndex(x => x.id == this.colorToDelete.id);
+        const deletedColor: Color = this.colors.splice(index)[0];
+        this.colorDeleted.emit([deletedColor, this.standardColor]);
+        this.colorDeleting = false;
+      });
+    }  
   }

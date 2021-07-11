@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using GTA_Map.Models;
+using GTA_Map.Services.Interfaces;
 
 namespace GTA_Map.Controllers
 {
@@ -13,11 +11,11 @@ namespace GTA_Map.Controllers
     [ApiController]
     public class ColorController : ControllerBase
     {
-        private readonly AMCDbContext _context;
+        private readonly IColorService colorService;
 
-        public ColorController(AMCDbContext context)
+        public ColorController(IColorService colorService)
         {
-            _context = context;
+            this.colorService = colorService;
         }
 
         // GET: api/Markers
@@ -26,8 +24,7 @@ namespace GTA_Map.Controllers
         {
             try
             {
-                List<Color> colors = await _context.Colors.OrderBy(x => x.Id).ToListAsync();
-                return colors;
+                return Ok(await colorService.GetAll());
             }
             catch (Exception ex)
             {
@@ -41,13 +38,11 @@ namespace GTA_Map.Controllers
         {
             try
             {
-                Color color = await _context.Colors.FindAsync(id);
-
+                Color color = await colorService.GetColor(id);
                 if (color == null)
                 {
                     return NotFound();
                 }
-
                 return color;
             }
             catch (Exception ex)
@@ -63,10 +58,8 @@ namespace GTA_Map.Controllers
         {
             try
             {
-                _context.Colors.Add(color);
-                await _context.SaveChangesAsync();
-
-                return CreatedAtAction("AddColor", new { id = color.Id }, color);
+                Color newColor = await colorService.AddColor(color);
+                return CreatedAtAction("AddColor", new { id = newColor.Id }, newColor);
             }
             catch (Exception ex)
             {
@@ -81,25 +74,7 @@ namespace GTA_Map.Controllers
         {
             try
             {
-                Color color = _context.Colors.Find(id);
-                if (color == null)
-                {
-                    return NotFound();
-                }
-
-                List<Marker> markers = _context.Markers.Where(x => x.ColorId == id).ToList();
-                Color standardColor = _context.Colors.Find(1);
-                foreach (Marker marker in markers)
-                {
-                    marker.ColorId = standardColor.Id;
-                    marker.Color = standardColor;
-                    _context.Markers.Update(marker);
-                }
-
-
-                _context.Colors.Remove(color);
-                await _context.SaveChangesAsync();
-
+                await colorService.DeleteColor(id);
                 return AcceptedAtAction("DeleteColor");
             }
             catch (Exception ex)

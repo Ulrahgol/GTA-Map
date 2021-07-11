@@ -78,9 +78,7 @@ export class AppComponent {
   }
 
   markerUpdatedEventHandler(event: any){
-    console.log(event.detail);
     this.markerService.updateMarker(event.detail).subscribe((marker: CustomMarker) => {
-      console.log(marker);
       const layerId = this.markers.getLayerId(event.detail);
       const layer = this.markers.getLayer(layerId);
       if(layer){

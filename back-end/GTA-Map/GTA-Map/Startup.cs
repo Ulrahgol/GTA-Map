@@ -1,4 +1,6 @@
 using GTA_Map.Models;
+using GTA_Map.Services;
+using GTA_Map.Services.Interfaces;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -7,13 +9,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
-using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace GTA_Map
 {
@@ -52,7 +49,8 @@ namespace GTA_Map
                     new MySqlServerVersion(new Version(10, 6, 2))
                 )
             );
-
+            services.AddScoped<IMarkerService, MarkerService>();
+            services.AddScoped<IColorService, ColorService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

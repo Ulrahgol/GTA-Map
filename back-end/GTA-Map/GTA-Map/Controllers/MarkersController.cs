@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using GTA_Map.Models;
+using GTA_Map.Services.Interfaces;
 
 namespace GTA_Map.Controllers
 {
@@ -13,11 +11,11 @@ namespace GTA_Map.Controllers
     [ApiController]
     public class MarkersController : ControllerBase
     {
-        private readonly AMCDbContext _context;
+        private readonly IMarkerService markerService;
 
-        public MarkersController(AMCDbContext context)
+        public MarkersController(IMarkerService markerService)
         {
-            _context = context;
+            this.markerService = markerService;
         }
 
         // GET: api/Markers
@@ -26,8 +24,7 @@ namespace GTA_Map.Controllers
         {
             try
             {
-                List<Marker> markers = await _context.Markers.Include(marker => marker.Color).ToListAsync();
-                return markers;
+                return Ok(await markerService.GetAll()); 
             }
             catch(Exception ex)
             {
@@ -41,8 +38,7 @@ namespace GTA_Map.Controllers
         {
             try
             {
-                var marker = await _context.Markers.FindAsync(id);
-
+                Marker marker = await markerService.GetMarker(id);
                 if (marker == null)
                 {
                     return NotFound();
@@ -59,15 +55,12 @@ namespace GTA_Map.Controllers
         // POST: api/Markers
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Marker>> PostMarker([FromBody] Marker marker)
+        public async Task<ActionResult<Marker>> AddMarker([FromBody] Marker marker)
         {
             try
             {
-                marker.Color = _context.Colors.Find(marker.Color.Id);
-                _context.Markers.Add(marker);
-                await _context.SaveChangesAsync();
-
-                return CreatedAtAction("GetMarker", new { id = marker.Id }, marker);
+                Marker newMarker = await markerService.AddMarker(marker);
+                return CreatedAtAction("AddMarker", new { id = newMarker.Id }, newMarker);
             }
             catch (Exception ex)
             {
@@ -82,14 +75,8 @@ namespace GTA_Map.Controllers
         {
             try
             {
-                Color color = _context.Colors.Find(marker.ColorId);
-                marker.Color = color;
-                marker.ColorId = color.Id;
-                Marker updatedMarker = _context.Markers.Update(marker).Entity;
-
-                await _context.SaveChangesAsync();
-
-                return AcceptedAtAction("UpdateMarker", new { id = marker.Id }, updatedMarker);
+                Marker updatedMarker = await markerService.UpdateMarker(marker);
+                return AcceptedAtAction("UpdateMarker", new { id = updatedMarker.Id }, updatedMarker);
             }
             catch (Exception ex)
             {
@@ -103,15 +90,7 @@ namespace GTA_Map.Controllers
         {
             try
             {
-                Marker marker = _context.Markers.Find(id);
-                if (marker == null)
-                {
-                    return NotFound();
-                }
-
-                _context.Markers.Remove(marker);
-                await _context.SaveChangesAsync();
-
+                await markerService.DeleteMarker(id);
                 return AcceptedAtAction("DeleteMarker");
             }
             catch (Exception ex)
