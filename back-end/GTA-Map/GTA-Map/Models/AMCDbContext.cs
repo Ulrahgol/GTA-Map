@@ -37,5 +37,6 @@ namespace GTA_Map.Models
         public DbSet<Marker> Markers { get; set; }
         public DbSet<Account> Accounts { get; set; }
         public DbSet<Color> Colors { get; set; }
+        public DbSet<Image> Images { get; set; }
     }
 }

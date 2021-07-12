@@ -4,7 +4,7 @@ mat-form-field {
 
 .mat-tab-label {
     min-width: 25px !important;
-    padding: 5px;
+    padding: 5px !important;
     background-color: transparent;
 }
 
@@ -59,3 +59,62 @@ mat-form-field {
 .contextMenuDelete{
     color: #f44336;
 }
+
+.inline-button{
+    padding: 0px;
+    min-width: 30px;
+    height: 30px;
+    >span>i{
+        font-size: 20px;
+    }
+}
+
+.image-button {
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
+.mat-column-name {
+    word-wrap: break-word !important;
+    white-space: unset !important;
+    flex: 0 0 80% !important;
+    width: 80% !important;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+  
+    word-break: break-word;
+  
+    -ms-hyphens: auto;
+    -moz-hyphens: auto;
+    -webkit-hyphens: auto;
+    hyphens: auto;
+    overflow: wrap;
+  }
+  
+  .mat-column-actions {
+    word-wrap: break-word !important;
+    white-space: unset !important;
+    flex: 0 0 20% !important;
+    width: 20% !important;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+    padding-left: 5px;
+  
+    word-break: break-word;
+  
+    -ms-hyphens: auto;
+    -moz-hyphens: auto;
+    -webkit-hyphens: auto;
+    hyphens: auto;
+  }
+
+  .table-wrapper {
+    max-height: 172px;
+    overflow-y: scroll;
+    margin-bottom: 5px;
+  }
+
+  .mat-row:hover {
+    border-color: black;
+    cursor: pointer;
+  }

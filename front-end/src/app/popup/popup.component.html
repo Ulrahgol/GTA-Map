@@ -1,27 +1,56 @@
 
-
- <div class="example-form" *ngIf="!deleting && !settings && !colorPicker">
-    <div fxLayout="row" >
-        <mat-form-field appearance="fill">
-        <mat-label>Name</mat-label>
-        <input matInput id="name" [(ngModel)]="mapMarker.name">
-        </mat-form-field>
-    </div> 
-
-     <div fxLayout="row" >
-        <mat-form-field appearance="fill">
-        <mat-label>Notes</mat-label>
-        <textarea matInput id="notes" [(ngModel)]="mapMarker.notes"></textarea>
-        </mat-form-field>
-     </div> 
-     
-
-     <div fxLayout="row" fxLayoutAlign="space-between end">
-        <button mat-flat-button color="primary" (click)="updateMarker()">Save</button>
-        <button mat-stroked-button color="basic" class="settingsButton" (click)="toggleSettings()"><span class="material-icons">settings</span></button>
-        <button mat-flat-button color="warn" (click)="toggleDeletePrompt()">Delete</button>
-     </div>
+<div *ngIf="!deleting && !settings && !colorPicker && !imageAdding && !imageDeleting" fxLayout="column" fxLayoutAlign="space-between stretch">
+   <div>
+      <mat-tab-group>
+         <mat-tab> 
+            <ng-template mat-tab-label>
+               <span class="material-icons">edit</span>
+            </ng-template>
+            <div class="tabbedContent" fxLayoutAlign="start center" fxLayoutGap="4px">
+               <div fxLayout="row" >
+                  <mat-form-field appearance="fill">
+                  <mat-label>Name</mat-label>
+                  <input matInput id="name" [(ngModel)]="mapMarker.name">
+                  </mat-form-field>
+               </div> 
+               <div fxLayout="row" >
+                  <mat-form-field appearance="fill">
+                  <mat-label>Notes</mat-label>
+                  <textarea matInput id="notes" [(ngModel)]="mapMarker.notes"></textarea>
+                  </mat-form-field>
+               </div>
+            </div>
+         </mat-tab>
+         <mat-tab> 
+            <ng-template mat-tab-label>
+               <span class="material-icons">image</span>
+            </ng-template>
+            <div class="table-wrapper">
+               <mat-table #table [dataSource]="images" class="mat-elevation-z3">
+                  <ng-container matColumnDef="name">
+                     <mat-header-cell mat-header-cell *matHeaderCellDef> Image </mat-header-cell>
+                     <mat-cell mat-cell *matCellDef="let image" (click)="openImage(image)"> {{image.name}} </mat-cell>
+                  </ng-container>
+                  <ng-container matColumnDef="actions">
+                     <mat-header-cell mat-header-cell *matHeaderCellDef></mat-header-cell>
+                     <mat-cell mat-cell *matCellDef="let image"><button mat-flat-button color="warn" class="inline-button" (click)="toggleImageDeleting(image)" fxLayoutAlign="center center"><i class="material-icons">delete</i></button></mat-cell>
+                  </ng-container>
+                  <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+                  <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row >
+               </mat-table>
+               <div class="image-button" fxLayoutAlign="center center">
+                  <button mat-flat-button color="primary" (click)="toggleImageAdding()">New Image</button>
+               </div>
+            </div>
+         </mat-tab>
+      </mat-tab-group>       
    </div>
+   <div fxLayout="row" fxLayoutAlign="space-between end">
+      <button mat-flat-button color="primary" (click)="updateMarker()">Save</button>
+      <button mat-stroked-button color="basic" class="settingsButton" (click)="toggleSettings()"><span class="material-icons">settings</span></button>
+      <button mat-flat-button color="warn" (click)="toggleDeletePrompt()">Delete</button>
+   </div>
+</div>
 
  <div *ngIf="deleting" fxLayout="column" fxLayoutAlign="space-between stretch">
      <div style="padding-bottom: 20px;">Are you sure you want to delete this marker?</div>
@@ -77,6 +106,33 @@
    </div>
 </div>
 
+<div *ngIf="imageAdding">
+   <div fxLayout="row" >
+      <mat-form-field appearance="fill">
+      <mat-label>Name</mat-label>
+      <input matInput id="name" [(ngModel)]="imageToAdd.name">
+      </mat-form-field>
+   </div> 
+   <div fxLayout="row" >
+      <mat-form-field appearance="fill">
+      <mat-label>Url</mat-label>
+      <input matInput id="url" [(ngModel)]="imageToAdd.url">
+      </mat-form-field>
+   </div> 
+   <div fxLayout="row" fxLayoutAlign="space-between end">
+      <button mat-flat-button color="primary" (click)="addImage()">Add</button>
+      <button mat-flat-button color="warn" (click)="toggleImageAdding()">Back</button>
+   </div>
+</div>
+
+<div *ngIf="imageDeleting">
+   <div style="padding-bottom: 20px;">Are you sure you want to delete this image?</div>
+   <div fxLayout="row" fxLayoutAlign="space-between end">
+      <button mat-flat-button color="warn" (click)="deleteImage()">Yes</button>
+      <button mat-flat-button color="primary" (click)="toggleImageDeleting()">No</button>
+   </div>
+</div>
+
 <context-menu>
    <ng-template contextMenuItem (execute)="toggleColorDeleting($event.item)">
      <div class="contextMenuDelete">
@@ -84,4 +140,3 @@
      </div> 
    </ng-template>
  </context-menu>
-

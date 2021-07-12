@@ -20,12 +20,17 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { ColorService } from './services/color.service';
 import { ColorSketchModule } from 'ngx-color/sketch';
 import { ContextMenuModule } from 'ngx-contextmenu';
+import { ImageService } from './services/Image.service';
+import { MatTableModule } from '@angular/material/table';
+import { MatDialogModule } from '@angular/material/dialog';
+import { ImageModalComponent } from './image-modal/image-modal.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     PopupComponent,
-    LoginComponent
+    LoginComponent,
+    ImageModalComponent
   ],
   imports: [
     BrowserModule,
@@ -42,9 +47,11 @@ import { ContextMenuModule } from 'ngx-contextmenu';
     FlexLayoutModule,
     MatTabsModule,
     ColorSketchModule,
-    ContextMenuModule.forRoot()
+    ContextMenuModule.forRoot(),
+    MatTableModule,
+    MatDialogModule
   ],
-  providers: [MarkerService,AccountService, ColorService],
+  providers: [MarkerService,AccountService, ColorService, ImageService],
   bootstrap: [AppComponent],
   entryComponents: [PopupComponent]
 })

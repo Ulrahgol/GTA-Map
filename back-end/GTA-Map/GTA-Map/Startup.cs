@@ -51,6 +51,7 @@ namespace GTA_Map
             );
             services.AddScoped<IMarkerService, MarkerService>();
             services.AddScoped<IColorService, ColorService>();
+            services.AddScoped<IImageService, ImageService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

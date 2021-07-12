@@ -1,13 +1,13 @@
 import { Component, OnInit, Input, ViewEncapsulation, Output, EventEmitter, ViewChild } from "@angular/core";
-import { NgElement, WithProperties } from "@angular/elements";
-import { Layer, Map } from "leaflet";
-import { ColorEvent } from "ngx-color";
+import { MatTable } from "@angular/material/table";
 import { ContextMenuComponent } from "ngx-contextmenu";
 import { Color } from "../models/color";
 import { CustomMarker } from "../models/customMarker";
+import { Image } from "../models/image";
 import { ColorService } from "../services/color.service";
-import { MarkerService } from "../services/marker.service";
-declare var $: any;
+import { ImageService } from "../services/Image.service";
+import { MatDialog } from '@angular/material/dialog';
+import { ImageModalComponent } from "../image-modal/image-modal.component";
 
 @Component({
     selector: 'popup',
@@ -27,6 +27,11 @@ declare var $: any;
     settings: Boolean = false;
     colorPicker: Boolean = false;
     colorDeleting: Boolean = false;
+    imageAdding: Boolean = false;
+    imageDeleting: Boolean = false;
+
+    imageToDelete: Image;
+    imageToAdd: Image;
 
     colorToDelete: Color;
     @ViewChild(ContextMenuComponent) public basicMenu: ContextMenuComponent;
@@ -35,12 +40,19 @@ declare var $: any;
     colors: Color[] = [];
     colorState: string;
 
-    constructor(private colorService: ColorService) {
+    images: Image[];
+    @ViewChild('#table', {static: false}) table: MatTable<any>;
+    displayedColumns: string[] = ['name', 'actions'];
+
+    constructor(private colorService: ColorService, private imageService: ImageService,
+      public dialog: MatDialog) {
     }
   
     ngOnInit() {
+      this.getImages();
       this.getColors();
       this.colorState = this.mapMarker.color.colorCode
+      this.imageToAdd = new Image();
     }
 
     public updateMarker(){
@@ -70,6 +82,15 @@ declare var $: any;
 
     public changeComplete(event: any){
       this.colorState = event.color.hex;
+    }
+
+    public toggleImageAdding(){
+      this.imageAdding = !this.imageAdding;
+    }
+
+    public toggleImageDeleting(image: Image = new Image()){
+      this.imageToDelete = image
+      this.imageDeleting = !this.imageDeleting;
     }
 
     getColors(){
@@ -103,4 +124,37 @@ declare var $: any;
         this.colorDeleting = false;
       });
     }  
+
+    getImages() {
+      this.imageService.getImageByMarkerId(this.mapMarker.id).subscribe((images: Image[]) => {
+        console.log(images);
+        
+        this.images = images;
+      });
+    }
+
+    addImage() {
+      this.imageToAdd.markerId = this.mapMarker.id;
+      this.imageService.addImage(this.imageToAdd).subscribe((image: Image) => {
+        this.images.push(image);
+        this.toggleImageAdding();
+      });
+    }
+
+    deleteImage() {
+      const index: number = this.images.findIndex(x => x.id=this.imageToDelete.id);
+      this.imageService.deleteImage(this.imageToDelete.id).subscribe(() => {
+        this.toggleImageDeleting();
+        this.images.splice(index+1,1);
+      });
+    }
+
+    openImage(image: Image){
+      const dialogRef = this.dialog.open(ImageModalComponent, {
+        width: '80vw',
+        height: '75vh',
+        data: image,
+        panelClass: 'image-modal'
+      });
+    }
   }

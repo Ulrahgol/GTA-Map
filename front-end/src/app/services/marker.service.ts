@@ -29,7 +29,6 @@ export class MarkerService {
     }
 
     public updateMarker(customMarker: CustomMarker): Observable<CustomMarker> {
-        console.log(customMarker);
         const marker = {
             id: customMarker.id,
             latitude: customMarker.latitude,
