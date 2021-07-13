@@ -68,7 +68,7 @@
                <span class="material-icons">palette</span>
             </ng-template>
             <div class="tabbedContent" fxLayoutAlign="start center" fxLayoutGap="4px">
-               <button mat-flat-button color="basic" class="colorPresetButton" (click)="selectColor(color)">
+               <button mat-flat-button color="basic" class="colorPresetButton" (click)="selectColor(standardColor)">
                   <div class="colorPreset" style="background-color: {{standardColor.colorCode}};"></div>
                </button>
                <button mat-flat-button color="basic" class="colorPresetButton" (click)="selectColor(color)" [contextMenu]="basicMenu" [contextMenuSubject]="color" *ngFor="let color of colors">
