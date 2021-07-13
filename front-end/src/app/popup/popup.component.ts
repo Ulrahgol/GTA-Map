@@ -105,7 +105,9 @@ import { ImageModalComponent } from "../image-modal/image-modal.component";
       const color: Color = new Color();
       color.colorCode = this.colorState;
       this.colorService.addColor(color).subscribe((newColor: Color) => {
-        this.colors.push(newColor);
+        this.mapMarker.color = newColor;
+        this.mapMarker.colorId = newColor.id;        
+        this.updateMarker();
         this.toggleColorPicker();
       });
     }
@@ -142,10 +144,10 @@ import { ImageModalComponent } from "../image-modal/image-modal.component";
     }
 
     deleteImage() {
-      const index: number = this.images.findIndex(x => x.id=this.imageToDelete.id);
+      const index: number = this.images.findIndex(x => x.id==this.imageToDelete.id);
       this.imageService.deleteImage(this.imageToDelete.id).subscribe(() => {
         this.toggleImageDeleting();
-        this.images.splice(index+1,1);
+        this.images.splice(index,1);
       });
     }
 
