@@ -153,8 +153,6 @@ import { ImageModalComponent } from "../image-modal/image-modal.component";
 
     openImage(image: Image){
       const dialogRef = this.dialog.open(ImageModalComponent, {
-        width: '80vw',
-        height: '75vh',
         data: image,
         panelClass: 'image-modal'
       });
